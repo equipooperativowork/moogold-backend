@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    /* === Directorios de entrada/salida === */
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    /* === Configuración del entorno === */
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "lib": ["ES2020"],
+    "types": ["node"],
+
+    /* === Módulos e importaciones === */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+
+    /* === Validaciones === */
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+
+    /* === Otros === */
+    "sourceMap": true,
+    "declaration": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
+     "typeRoots": ["./src/types", "./node_modules/@types"]
+  },
+  "include": ["src/**/*", "src/types/express/index.d.ts"],
+  "exclude": ["node_modules"]
+}
