@@ -2,6 +2,7 @@ import express, { Application } from "express";
 import dotenv from "dotenv";
 import cors, { CorsOptions } from "cors";
 import { connectDB } from "./config/database"; // ✅ Importación correcta
+import globalRoutes from "./routes/globalRoutes";
 import userRouters from "./routes/userRoutes";
 import cookieParser from "cookie-parser";
 
@@ -36,6 +37,7 @@ app.use(cors({
 
 // ✅ Rutas principales
 app.use("/api/usuario", userRouters);
+app.use("/api", globalRoutes);
 
 
 

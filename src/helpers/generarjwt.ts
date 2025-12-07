@@ -11,7 +11,7 @@ const generarJwt = (id: string | number): string => {
   }
 
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
+    expiresIn: "15m",
   });
 };
 

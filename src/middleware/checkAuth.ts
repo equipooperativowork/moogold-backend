@@ -4,12 +4,13 @@ import pool from "../config/database";
 
 export interface AuthRequest extends Request {
   user?: any;
+  tokenExp?: number; // 👈 agregar esta propiedad
 }
 
 export const checkAuth = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     // ✅ Leer el token desde la cookie
-  const token = req.cookies.token;
+    const token = req.cookies.token;
 
     if (!token) {
       return res.status(401).json({ msg: "Token no proporcionado" });
@@ -37,3 +38,7 @@ export const checkAuth = async (req: AuthRequest, res: Response, next: NextFunct
     return res.status(401).json({ msg: "Token no válido o expirado" });
   }
 };
+
+
+
+

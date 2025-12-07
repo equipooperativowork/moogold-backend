@@ -2,8 +2,9 @@
 import axios from "axios";
 import crypto from "crypto";
 
-const PARTNER_ID = "fea531f2228f70d197ab2726bcae0402";
-const SECRET_KEY = "cadnxDq6zy";
+const PARTNER_ID = process.env.PARTNER_ID!;
+const SECRET_KEY = process.env.SECRET_KEY!;
+
 
 const path = "product/list_product";
 
@@ -23,10 +24,7 @@ const signature = crypto
 
 const authBasic = Buffer.from(`${PARTNER_ID}:${SECRET_KEY}`).toString("base64");
 
-// ============ IMPORTANTE ===========
-// Axios, por defecto, envía "Accept: application/json,image/*"
-// MooGold SE CAE si no fuerzas el content-type EXACTO
-// ===================================
+
 (async () => {
   try {
     console.log("📡 Enviando solicitud a MooGold...");
@@ -36,11 +34,10 @@ const authBasic = Buffer.from(`${PARTNER_ID}:${SECRET_KEY}`).toString("base64");
       payload,
       {
         headers: {
-          "Content-Type": "application/json", // OBLIGATORIO
+          "Content-Type": "application/json",
           "timestamp": timestamp.toString(),
           "auth": signature,
-          "Authorization": `Basic ${authBasic}`,
-          "Accept": "application/json"        // OBLIGATORIO PARA EVITAR HTML 404
+          "Authorization": `Basic ${authBasic}`
         }
       }
     );
