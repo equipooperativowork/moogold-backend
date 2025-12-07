@@ -160,14 +160,27 @@ export const reenviarVerificacion = async (req: Request, res: Response) => {
 
 
 /** -------------------------------
- * Autenticar usuario (login) OK
+ * Autenticar usuario (login)
 ---------------------------------- */
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
+    // 🔹 Traemos el usuario + su rol
     const usuario = await pool.query(
-      "SELECT * FROM usuario WHERE email = $1",
+      `
+      SELECT 
+        u.id,
+        u.nombre,
+        u.email,
+        u.password,
+        u.verificado,
+        r.id AS id_rol,
+        r.nombre AS rol_nombre
+      FROM usuario u
+      INNER JOIN rol r ON r.id = u.id_rol
+      WHERE u.email = $1
+      `,
       [email]
     );
 
@@ -177,37 +190,46 @@ export const login = async (req: Request, res: Response) => {
 
     const user = usuario.rows[0];
 
-    // Validar contraseña
+    // 🔹 Validar contraseña
     const passwordValida = await bcrypt.compare(password, user.password);
     if (!passwordValida) {
       return res.status(401).json({ msg: "Contraseña incorrecta." });
     }
 
-    //  Bloquear login si el usuario NO está verificado
+    // 🔹 Bloquear login si no está verificado
     if (!user.verificado) {
       return res.status(403).json({
         msg: "Tu cuenta no está verificada. Revisa tu correo para activarla.",
       });
     }
 
-    // Generar JWT
+    // 🔹 Generar JWT
     const token = generarjwt(user.id);
 
-    // Enviar cookie HTTP-only
+    // 🔹 Guardar JWT en cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // cambia a true en producción con HTTPS
+      secure: false,     // true si usas HTTPS
       sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
+      maxAge: 30 * 24 * 60 * 60 * 1000, 
     });
 
-    return res.json({ msg: "Inicio de sesión exitoso" });
+    // 🔹 ENVIAMOS AL FRONT: rol incluido
+    return res.json({
+      msg: "Inicio de sesión exitoso",
+      id: user.id,
+      nombre: user.nombre,
+      email: user.email,
+      id_rol: user.id_rol,
+      rol_nombre: user.rol_nombre,
+    });
 
   } catch (error) {
     console.error("Error en login:", error);
     res.status(500).json({ msg: "Error en el servidor" });
   }
 };
+
 
 
 /** ------------------------------------
@@ -551,14 +573,15 @@ export const perfil = async (req: AuthRequest, res: Response) => {
 
 export const autenticarRol = async (req: AuthRequest, res: Response) => {
   try {
-    const id = req.user.id; 
+    const id = req.user.id;
 
     const result = await pool.query(
       `
       SELECT 
         u.nombre,
         u.email,
-        r.id AS id_rol
+        r.id AS id_rol,
+        r.nombre AS rol_nombre
       FROM usuario u
       INNER JOIN rol r ON u.id_rol = r.id
       WHERE u.id = $1;
@@ -570,12 +593,13 @@ export const autenticarRol = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ msg: "Usuario no encontrado" });
     }
 
-    res.json(result.rows[0]);
+    res.json(result.rows[0]); // 👉 Devuelve nombre, email, id_rol y rol_nombre
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: "Error al obtener el usuario autenticado" });
   }
 };
+
 
 //Funcion para cerrar sesión
 
