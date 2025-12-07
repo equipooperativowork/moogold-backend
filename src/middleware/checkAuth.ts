@@ -5,7 +5,6 @@ import pool from "../config/database";
 export interface AuthRequest extends Request {
   user?: any;
   tokenExp?: number;
-  tokenExp?: number;
 }
 
 export const checkAuth = async (req: AuthRequest, res: Response, next: NextFunction) => {
