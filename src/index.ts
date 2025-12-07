@@ -20,32 +20,29 @@ app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ limit: "5mb", extended: true }));
 app.use(cookieParser());
 
-// ✅ Configurar CORS
-const whitelist = ["http://localhost:5173"]; // <-- Cambia esto si tienes dominio real
+// CORS CONFIG CORRECTA
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://[::1]:5173"
+];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || whitelist.includes(origin)) {
-      callback(null, true);
+  origin: function (origin, callback) {
+    // Permitir llamadas desde herramientas tipo Postman o curl (sin origin)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     } else {
-      callback(new Error("Error de CORS"));
+      return callback(new Error("CORS: Origin no permitido: " + origin));
     }
   },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"]
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 // ✅ Rutas principales
 app.use("/api/usuario", userRouters);
 app.use("/api", globalRoutes);
-
-
-
-
-// ✅ Puerto de ejecución
-const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en el puerto ${PORT}`);
-});
-
