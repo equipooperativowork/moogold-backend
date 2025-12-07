@@ -211,7 +211,7 @@ export const login = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: false,     // true si usas HTTPS
       sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60 * 1000, 
+      maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
     // 🔹 ENVIAMOS AL FRONT: rol incluido

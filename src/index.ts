@@ -1,11 +1,10 @@
 import express, { Application } from "express";
 import dotenv from "dotenv";
-import cors, { CorsOptions } from "cors";
-import { connectDB } from "./config/database"; // ✅ Importación correcta
+import cors from "cors";
+import { connectDB } from "./config/database";
 import globalRoutes from "./routes/globalRoutes";
 import userRouters from "./routes/userRoutes";
 import cookieParser from "cookie-parser";
-
 
 // Cargar variables de entorno
 dotenv.config();
@@ -15,34 +14,34 @@ connectDB();
 
 const app: Application = express();
 
-// Middlewares para manejar JSON y formularios grandes
+// Middlewares
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ limit: "5mb", extended: true }));
 app.use(cookieParser());
 
-// CORS CONFIG CORRECTA
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
-  "http://[::1]:5173"
-];
+// -------------------------
+// 🔥 CORS SIMPLE Y SEGURO
+// -----------------------
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // Permitir llamadas desde herramientas tipo Postman o curl (sin origin)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error("CORS: Origin no permitido: " + origin));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  origin: [
+    "http://localhost:5173",
+    "http://207.180.207.223"
+  ],
+  credentials: true
 }));
 
-// ✅ Rutas principales
+// -------------------------
+// 🔥 RUTAS
+// -------------------------
 app.use("/api/usuario", userRouters);
 app.use("/api", globalRoutes);
+
+// -------------------------
+// 🔥 SERVIDOR
+// -------------------------
+const PORT = Number(process.env.PORT) || 4000;
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
+});
