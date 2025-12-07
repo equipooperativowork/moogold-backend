@@ -2,14 +2,13 @@
 import axios from "axios";
 import crypto from "crypto";
 
-const PARTNER_ID = process.env.PARTNER_ID!;
-const SECRET_KEY = process.env.SECRET_KEY!;
+const PARTNER_ID = "fea531f2228f70d197ab2726bcae0402";
+const SECRET_KEY = "cadnxDq6zy";
 
-
-const path = "product/list_product";
+const path = "user/balance";
 
 const payload = {
-  path: "product/list_product",
+  path: "user/balance",
   category_id: 50
 };
 
@@ -30,7 +29,7 @@ const authBasic = Buffer.from(`${PARTNER_ID}:${SECRET_KEY}`).toString("base64");
     console.log("📡 Enviando solicitud a MooGold...");
 
     const response = await axios.post(
-      "https://moogold.com/wp-json/v1/api/product/list_product",
+      "https://moogold.com/wp-json/v1/api/user/balance",
       payload,
       {
         headers: {
