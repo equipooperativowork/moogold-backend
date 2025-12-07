@@ -210,8 +210,8 @@ export const login = async (req: Request, res: Response) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,     // true si usas HTTPS
-      sameSite: "none",
-      maxAge: 30 * 24 * 60 * 60 * 1000, 
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
     // 🔹 ENVIAMOS AL FRONT: rol incluido

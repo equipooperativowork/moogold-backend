@@ -5,6 +5,7 @@ import pool from "../config/database";
 export interface AuthRequest extends Request {
   user?: any;
   tokenExp?: number;
+  tokenExp?: number;
 }
 
 export const checkAuth = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -30,6 +31,7 @@ export const checkAuth = async (req: AuthRequest, res: Response, next: NextFunct
       INNER JOIN rol r ON u.id_rol = r.id
       WHERE u.id = $1
     `;
+
 
     const result = await pool.query(query, [decoded.id]);
 
