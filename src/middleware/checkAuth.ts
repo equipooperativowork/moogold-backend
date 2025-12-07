@@ -21,7 +21,7 @@ export const checkAuth = async (req: AuthRequest, res: Response, next: NextFunct
 
     // ✅ Buscar el usuario
     const query = `
-      SELECT id, nombre, email, rol_id
+      SELECT id, nombre, email, id_rol
       FROM usuario
       WHERE id = $1
     `;

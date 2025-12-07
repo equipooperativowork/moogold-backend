@@ -12,7 +12,7 @@ import crypto from "crypto";
 
 
 export const registrar = async (req: Request, res: Response) => {
-  const { nombre, email, password, rol_id } = req.body;
+  const { nombre, email, password, id_rol } = req.body;
 
   try {
     const existeUsuario = await pool.query(
@@ -34,10 +34,10 @@ export const registrar = async (req: Request, res: Response) => {
 
     // Guardar usuario
     const nuevoUsuario = await pool.query(
-      `INSERT INTO usuario (nombre, email, password, rol_id, verificado, token_verificacion, token_verificacion_expira)
+      `INSERT INTO usuario (nombre, email, password, id_rol, verificado, token_verificacion, token_verificacion_expira)
        VALUES ($1, $2, $3, $4, false, $5, $6)
-       RETURNING id, nombre, email, rol_id`,
-      [nombre, email, passwordHash, rol_id, tokenVerificacion, expiracion]
+       RETURNING id, nombre, email, id_rol`,
+      [nombre, email, passwordHash, id_rol, tokenVerificacion, expiracion]
     );
 
     // Enviar correo de verificación
@@ -315,7 +315,7 @@ export const mostrar = async (req: Request, res: Response) => {
         r.nombre AS rol
       FROM usuario u
       INNER JOIN rol r 
-        ON u.rol_id = r.id
+        ON u.id_rol = r.id
     `);
 
     res.json(result.rows);
@@ -343,7 +343,7 @@ export const mostrarPerfil = async (req: AuthRequest, res: Response) => {
           u.estado,
           r.nombre AS rol
         FROM usuario u
-        INNER JOIN rol r ON u.rol_id = r.id
+        INNER JOIN rol r ON u.id_rol = r.id
         WHERE u.id = $1`,
       [usuarioId]
     );
@@ -376,7 +376,7 @@ export const mostrarPerfilPorId = async (req: Request, res: Response) => {
           u.estado,
           r.nombre AS rol
         FROM usuario u
-        INNER JOIN rol r ON u.rol_id = r.id
+        INNER JOIN rol r ON u.id_rol = r.id
         WHERE u.id = $1`,
       [id]
     );
@@ -399,7 +399,7 @@ export const mostrarPerfilPorId = async (req: Request, res: Response) => {
 ------------------------------------------------------- */
 export const editUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { rol_id, saldo, estado } = req.body;
+  const { id_rol, saldo, estado } = req.body;
 
   try {
     // Construir consulta dinámica
@@ -407,9 +407,9 @@ export const editUser = async (req: Request, res: Response) => {
     const values = [];
     let index = 1;
 
-    if (rol_id !== undefined) {
-      fields.push(`rol_id = $${index++}`);
-      values.push(rol_id);
+    if (id_rol !== undefined) {
+      fields.push(`id_rol = $${index++}`);
+      values.push(id_rol);
     }
 
     if (saldo !== undefined) {
@@ -432,7 +432,7 @@ export const editUser = async (req: Request, res: Response) => {
       UPDATE usuario
       SET ${fields.join(", ")}
       WHERE id = $${index}
-      RETURNING id, nombre, email, rol_id, saldo, estado
+      RETURNING id, nombre, email, id_rol, saldo, estado
     `;
 
     const result = await pool.query(query, values);
@@ -491,7 +491,7 @@ export const editarPerfil = async (req: AuthRequest, res: Response) => {
       UPDATE usuario
       SET ${campos.join(", ")}
       WHERE id = $${indice}
-      RETURNING id, nombre, email, rol_id
+      RETURNING id, nombre, email, id_rol
     `;
 
     const result = await pool.query(query, valores);
@@ -558,9 +558,9 @@ export const autenticarRol = async (req: AuthRequest, res: Response) => {
       SELECT 
         u.nombre,
         u.email,
-        r.id AS rol_id
+        r.id AS id_rol
       FROM usuario u
-      INNER JOIN rol r ON u.rol_id = r.id
+      INNER JOIN rol r ON u.id_rol = r.id
       WHERE u.id = $1;
       `,
       [id]

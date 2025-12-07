@@ -1,6 +1,9 @@
 
 import axios from "axios";
 import crypto from "crypto";
+import dns from "dns";
+
+dns.setDefaultResultOrder("ipv4first");
 
 const PARTNER_ID = "fea531f2228f70d197ab2726bcae0402";
 const SECRET_KEY = "cadnxDq6zy";
@@ -9,7 +12,6 @@ const path = "user/balance";
 
 const payload = {
   path: "user/balance",
-  category_id: 50
 };
 
 const timestamp = Math.floor(Date.now() / 1000);
